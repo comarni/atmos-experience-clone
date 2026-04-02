@@ -4,6 +4,7 @@ import { Text, Sky, Stars, Float, Instance, Instances, OrbitControls, Perspectiv
 import * as THREE from 'three'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { Instructions, LoadingScreen } from './components/Instructions'
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger)
@@ -480,10 +481,15 @@ function ScrollProgress() {
 
 function App() {
   const [isLoaded, setIsLoaded] = useState(false)
+  const [showInstructions, setShowInstructions] = useState(true)
   
   useEffect(() => {
     // Simulate loading completion
-    const timer = setTimeout(() => setIsLoaded(true), 2000)
+    const timer = setTimeout(() => {
+      setIsLoaded(true)
+      // Hide instructions after 3 seconds
+      setTimeout(() => setShowInstructions(false), 3000)
+    }, 2000)
     return () => clearTimeout(timer)
   }, [])
   
@@ -508,46 +514,11 @@ function App() {
       
       <ScrollProgress />
       
-      {/* Loading overlay */}
-      {!isLoaded && (
-        <Html fullscreen>
-          <div style={{
-            position: 'fixed',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            background: '#000',
-            display: 'flex',
-            flexDirection: 'column',
-            justifyContent: 'center',
-            alignItems: 'center',
-            zIndex: 1000
-          }}>
-            <div style={{
-              width: '60px',
-              height: '60px',
-              border: '3px solid rgba(255, 255, 255, 0.3)',
-              borderTopColor: '#4fc3f7',
-              borderRadius: '50%',
-              animation: 'spin 1s linear infinite',
-              marginBottom: '20px'
-            }} />
-            <div style={{
-              fontSize: '18px',
-              color: '#aaa',
-              letterSpacing: '2px'
-            }}>
-              PREPARING FLIGHT...
-            </div>
-            <style>{`
-              @keyframes spin {
-                to { transform: rotate(360deg); }
-              }
-            `}</style>
-          </div>
-        </Html>
-      )}
+      {/* Loading screen */}
+      {!isLoaded && <LoadingScreen />}
+      
+      {/* Instructions overlay */}
+      {showInstructions && isLoaded && <Instructions />}
     </>
   )
 }
