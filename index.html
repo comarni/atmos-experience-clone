@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SkyJourney - Interactive 3D Flight Experience</title>
+  <meta name="description" content="An immersive scroll-driven 3D flight experience through procedural skies">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+      overflow-x: hidden;
+      background: #000;
+      color: white;
+    }
+
+    #root {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+    }
+
+    .loading-screen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      transition: opacity 1s ease;
+    }
+
+    .loading-screen.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loader {
+      width: 60px;
+      height: 60px;
+      border: 3px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top-color: #4fc3f7;
+      animation: spin 1s ease-in-out infinite;
+      margin-bottom: 20px;
+    }
+
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+
+    .loading-text {
+      font-size: 18px;
+      color: #aaa;
+      letter-spacing: 2px;
+    }
+
+    .scroll-hint {
+      position: fixed;
+      bottom: 40px;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      z-index: 10;
+      opacity: 0.8;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 0.8; }
+      50% { opacity: 0.4; }
+    }
+
+    .scroll-hint svg {
+      width: 24px;
+      height: 24px;
+      margin-top: 8px;
+      fill: white;
+    }
+
+    .info-panel {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: rgba(0, 0, 0, 0.7);
+      padding: 15px;
+      border-radius: 10px;
+      max-width: 300px;
+      z-index: 10;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .info-panel h3 {
+      margin-bottom: 10px;
+      color: #4fc3f7;
+    }
+
+    .info-panel p {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #ccc;
+    }
+
+    .mobile-warning {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.95);
+      z-index: 1001;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
+    }
+
+    .mobile-warning.show {
+      display: flex;
+    }
+
+    .mobile-warning-content {
+      max-width: 400px;
+    }
+
+    .mobile-warning h2 {
+      color: #ff6b6b;
+      margin-bottom: 20px;
+    }
+
+    .mobile-warning p {
+      margin-bottom: 15px;
+      line-height: 1.6;
+    }
+
+    @media (max-width: 768px) {
+      .scroll-hint {
+        bottom: 20px;
+        font-size: 14px;
+      }
+      
+      .info-panel {
+        bottom: 10px;
+        right: 10px;
+        left: 10px;
+        max-width: none;
+      }
+    }
+
+    @media (max-height: 600px) {
+      .scroll-hint {
+        display: none;
+      }
+    }
+  </style>
+  <script type="module" crossorigin src="/atmos-experience-clone/assets/index-Cyj8rQoS.js"></script>
+  <link rel="stylesheet" crossorigin href="/atmos-experience-clone/assets/index-UsXsXfe0.css">
+</head>
+<body>
+  <div id="root"></div>
+  
+  <div class="loading-screen" id="loadingScreen">
+    <div class="loader"></div>
+    <div class="loading-text">PREPARING FLIGHT...</div>
+  </div>
+
+  <div class="scroll-hint" id="scrollHint">
+    <div>SCROLL TO FLY</div>
+    <svg viewBox="0 0 24 24">
+      <path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/>
+    </svg>
+  </div>
+
+  <div class="info-panel" id="infoPanel">
+    <h3>SKYJOURNEY</h3>
+    <p>An interactive 3D flight experience. Scroll to navigate through the sky and discover aviation facts.</p>
+    <p style="margin-top: 10px; font-size: 12px; color: #888;">Inspired by ATMOS by Leeroy</p>
+  </div>
+
+  <div class="mobile-warning" id="mobileWarning">
+    <div class="mobile-warning-content">
+      <h2>⚠️ Mobile Experience Limited</h2>
+      <p>This 3D experience is optimized for desktop browsers with better performance.</p>
+      <p>You can still view it on mobile, but for the best experience, please use a desktop computer.</p>
+      <p style="margin-top: 20px;">
+        <button onclick="document.getElementById('mobileWarning').classList.remove('show')" 
+                style="background: #4fc3f7; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;">
+          Continue Anyway
+        </button>
+      </p>
+    </div>
+  </div>
+
+  
+  <script>
+    // Detect mobile and show warning
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      document.getElementById('mobileWarning').classList.add('show');
+    }
+
+    // Hide loading screen when page loads
+    window.addEventListener('load', () => {
+      setTimeout(() => {
+        document.getElementById('loadingScreen').classList.add('hidden');
+      }, 1500);
+    });
+
+    // Hide scroll hint after first scroll
+    let scrolled = false;
+    window.addEventListener('scroll', () => {
+      if (!scrolled) {
+        scrolled = true;
+        document.getElementById('scrollHint').style.opacity = '0';
+        setTimeout(() => {
+          document.getElementById('scrollHint').style.display = 'none';
+        }, 500);
+      }
+    });
+  </script>
+</body>
+</html>
