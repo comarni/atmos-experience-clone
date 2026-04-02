@@ -438,9 +438,12 @@ function Scene() {
   )
 }
 
-// Scroll progress indicator
+// Scroll progress indicator - Must be inside Canvas
 function ScrollProgress() {
   const scroll = useScroll()
+  
+  // Check if scroll is available
+  if (!scroll) return null
   
   return (
     <Html fullscreen>
@@ -457,7 +460,8 @@ function ScrollProgress() {
         border: '1px solid rgba(255, 255, 255, 0.1)',
         display: 'flex',
         alignItems: 'center',
-        gap: '10px'
+        gap: '10px',
+        zIndex: 1000
       }}>
         <div style={{
           width: '100px',
@@ -467,13 +471,13 @@ function ScrollProgress() {
           overflow: 'hidden'
         }}>
           <div style={{
-            width: `${scroll.offset * 100}%`,
+            width: `${(scroll.offset || 0) * 100}%`,
             height: '100%',
             background: '#4fc3f7',
             transition: 'width 0.1s ease'
           }} />
         </div>
-        <span>{(scroll.offset * 100).toFixed(0)}%</span>
+        <span>{((scroll.offset || 0) * 100).toFixed(0)}%</span>
       </div>
     </Html>
   )
@@ -498,6 +502,7 @@ function App() {
       <Canvas shadows>
         <ScrollControls pages={3} damping={0.1}>
           <Scene />
+          <ScrollProgress />
           <Scroll html>
             {/* This creates scrollable space */}
             <div style={{
@@ -511,8 +516,6 @@ function App() {
         <PerspectiveCamera makeDefault position={[0, 10, 30]} fov={60} />
         <OrbitControls enableZoom={false} enablePan={false} enableRotate={false} />
       </Canvas>
-      
-      <ScrollProgress />
       
       {/* Loading screen */}
       {!isLoaded && <LoadingScreen />}
