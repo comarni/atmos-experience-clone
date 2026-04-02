@@ -1,0 +1,28 @@
+{
+  "name": "atmos-experience-clone",
+  "version": "1.0.0",
+  "description": "Interactive 3D scroll-driven flight experience similar to ATMOS by Leeroy",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npm run build && gh-pages -d dist"
+  },
+  "dependencies": {
+    "three": "^0.169.0",
+    "@react-three/fiber": "^8.16.5",
+    "@react-three/drei": "^9.112.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "gsap": "^3.12.5",
+    "troika-three-text": "^0.52.0"
+  },
+  "devDependencies": {
+    "@types/three": "^0.169.0",
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^5.4.8",
+    "gh-pages": "^6.2.0"
+  },
+  "homepage": "https://comarni.github.io/atmos-experience-clone"
+}
