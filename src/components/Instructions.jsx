@@ -1,10 +1,8 @@
 import React from 'react'
-import { Html } from '@react-three/drei'
 
 export function Instructions() {
   return (
-    <Html fullscreen>
-      <div style={{
+    <div style={{
         position: 'fixed',
         top: '50%',
         left: '50%',
@@ -64,14 +62,12 @@ export function Instructions() {
           </p>
         </div>
       </div>
-    </Html>
   )
 }
 
 export function LoadingScreen() {
   return (
-    <Html fullscreen>
-      <div style={{
+    <div style={{
         position: 'fixed',
         top: 0,
         left: 0,
@@ -149,6 +145,5 @@ export function LoadingScreen() {
           }
         `}</style>
       </div>
-    </Html>
   )
 }
